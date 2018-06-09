@@ -13,6 +13,21 @@ let nextBlock = Array(3);
 let timer = 500;
 let dropping = false;
 let curTetromino, curRot, curPos, score = 0, lost=false;
+let highScores = [];
+
+function getCookie(name) {
+	cookies = document.cookie.split(";");
+	for(let i=0; i<cookies.length; i+=2) {
+		if(cookies[i].split("=")[0] == name) {
+			return cookies[i].split("=")[1];
+		}
+	}
+	return null;
+}
+
+function setCookie(name, value) {
+	document.cookie = name + "=" + value;
+}
 
 function init() {
 	// Initialize grid array
@@ -25,6 +40,9 @@ function init() {
 	for(let i=0; i<3; i++) {
 		nextBlock[i] = Math.floor(Math.random()*7);
 	}
+	json = getCookie("highscore");
+	if(json != null)
+		highScores = JSON.parse(json);
 	spawnNext();
 }
 
@@ -159,6 +177,12 @@ function checkLosing() {
 }
 
 function lose() {
+	highScores.push(score);
+	highScores.sort(function(a, b){return b-a});
+	while(highScores.length > 10)
+		highScores.pop();
+	setCookie("highscore", JSON.stringify(highScores));
+
 	console.log("Lost");
 	lost = true;
 	drawGrid();
@@ -264,5 +288,12 @@ function drawGrid() {
 		ctx.fillStyle = "White";
 		ctx.font="42px 'Roboto Mono'";
 		ctx.fillText("YOU LOST!", canvas.width/2, canvas.height/2);
+		ctx.font="32px 'Roboto Mono'";
+		ctx.fillText("HIGH SCORES", canvas.width/2, canvas.height/2+35);
+		ctx.font="14px 'Roboto Mono'";
+		for(let i=0; i<highScores.length; i++) {
+			ctx.fillText((i+1) + ". " + highScores[i], canvas.width/2, canvas.height/2+55+i*20);
+			console.log((i+1) + ". " + highScores[i]);
+		}
 	}
 }
