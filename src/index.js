@@ -26,7 +26,9 @@ function getCookie(name) {
 }
 
 function setCookie(name, value) {
-	document.cookie = name + "=" + value;
+	var expirationDate = new Date();
+	expirationDate.setDate(expirationDate.getDate() + 10000);
+	document.cookie = name + "=" + value + ";expires=" + expirationDate.toUTCString();
 }
 
 function init() {
